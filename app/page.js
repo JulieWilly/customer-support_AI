@@ -2,9 +2,19 @@
 import { Box, Button, Stack, TextField } from "@mui/material";
 import { tree } from "next/dist/build/templates/app-page";
 import { AssistantStream } from "openai/lib/AssistantStream";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import App from "next/app";
 
 export default function Home() {
+  const messageEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: 'smoooth'})
+  }
+
+  useEffect(() => {
+      scrollToBottom()
+  }, [])
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -13,7 +23,15 @@ export default function Home() {
   ])
 
   const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+
   const sendMessage = async () => {
+    if (!message.trim() || isLoading) return;
+    isLoading(true)
+    // to limit sending empty messages.
+    if (!message.trim()) return
+
     setMessage('')
     setMessages((messages) => [
       ...messages, 
@@ -23,36 +41,54 @@ export default function Home() {
     ])
 
     // send message to the server.
-    const response = fetch('/api/chat', {
+    try{
+
+      const response = fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify([...messages, {role: 'user', content: message}])
-    }).then(async (res) => {
+    })
+    if (!response.ok){
+      throw new Error('Network response was not ok')
+    }
       const reader = res.body.getReader() // get a reader to rea the response body
       const decoder = new TextDecoder() // create a decoder to decode the response text
       
   let result = ''
   // function to process the text from the response.
-  return reader.read().then(function processText({done, value}) {
-    if (done) {
-      return result;
-    } 
+  while(true){
+    const {done, value} = await reader.read()
+    if(done) break;
 
-     const text = decoder.decode(value || new Uint8Array(), { stream: tree})
+    const text = decoder.decode(value, { stream: true})
      setMessages((messages) => {
-      let lastMessage = messages[message.length - 1] // get the last message.
+      let lastMessage = messages[messages.length - 1] // get the last message.
       let otherMessages = messages.slice(0, messages.length - 1) // get all the messages.
 
       return [
         ...otherMessages,
         {...lastMessage, content:lastMessage.content + text} // append the decoded text to the assistant's message
       ]
-     })
-     return reader.read().then(processText) // continue reading the next chunk of the response.
-  })
-    })
+     })  
+  }
+    } catch(error){
+      console.error('Error:', error)
+      setMessages((messages) => [
+        ...messages,
+        {role: 'assistant', content: "I'm sorry, but I encoutered an error. Please  try again later."}
+      ])
+    }
+  
+    isLoading(false)
+  }
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter ' && !event.shiftKey) {
+      event.preventDefault()
+      sendMessage()
+    }
   }
   return (
 <Box width={'100vw'} height={'100vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
@@ -63,7 +99,6 @@ export default function Home() {
           <Box bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'} color={'white'} borderRadius={16} p={3} >
             {message.content}
           </Box>
-
         </Box>
       )
         
@@ -72,8 +107,11 @@ export default function Home() {
 
   </Stack>
   <Stack direction={'row'} spacing={2}>
-    <TextField label={'Message'} fullWidth value={'message'} onChange={(e) => setMessage(e.target.value)} />
-      <Button variant="contained" onClick={sendMessage}>Send</Button>
+    <TextField label={'Message'} fullWidth value={'message'} onChange={(e) => setMessage(e.target.value)} onKeyPress={handleKeyPress} disabled={isLoading} />
+
+      <Button variant="contained" onClick={sendMessage} disabled={isLoading}> {isLoading ? 'Sending... ': 'Send'}</Button>
+
+      <div ref={messageEndRef}/>
   </Stack>
 
 </Box>
