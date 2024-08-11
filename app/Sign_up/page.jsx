@@ -1,14 +1,11 @@
 'use client'
-import { TextField } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import './auth.css'
 import auth from '@/config';
 import { GoogleAuthProvider, FacebookAuthProvider, GithubAuthProvider, TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const login = () => {
-    const [details, setDetails] = useState()
     const handleSignUp = () => {
-    singInWithGoogle;
     }
 
   // sing in with google.
