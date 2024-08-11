@@ -1,15 +1,12 @@
 'use client'
 import { Box, Button, Stack, TextField } from "@mui/material";
-import { tree } from "next/dist/build/templates/app-page";
-import { AssistantStream } from "openai/lib/AssistantStream";
 import { useEffect, useRef, useState } from "react";
-import App from "next/app";
 
 export default function Home() {
   const messageEndRef = useRef(null)
 
   const scrollToBottom = () => {
-    messageEndRef.current?.scrollIntoView({ behavior: 'smoooth'})
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth'})
   }
 
   useEffect(() => {
@@ -25,12 +22,11 @@ export default function Home() {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-
   const sendMessage = async () => {
-    if (!message.trim() || isLoading) return;
-    isLoading(true)
     // to limit sending empty messages.
-    if (!message.trim()) return
+    if (!message.trim() || isLoading) return;
+    setIsLoading(true)
+
 
     setMessage('')
     setMessages((messages) => [
@@ -43,20 +39,21 @@ export default function Home() {
     // send message to the server.
     try{
 
-      const response = fetch('/api/chat', {
+      const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify([...messages, {role: 'user', content: message}])
     })
+
+
     if (!response.ok){
       throw new Error('Network response was not ok')
     }
-      const reader = res.body.getReader() // get a reader to rea the response body
+      const reader = response.body.getReader() // get a reader to read the response body
       const decoder = new TextDecoder() // create a decoder to decode the response text
       
-  let result = ''
   // function to process the text from the response.
   while(true){
     const {done, value} = await reader.read()
@@ -65,7 +62,7 @@ export default function Home() {
     const text = decoder.decode(value, { stream: true})
      setMessages((messages) => {
       let lastMessage = messages[messages.length - 1] // get the last message.
-      let otherMessages = messages.slice(0, messages.length - 1) // get all the messages.
+      let otherMessages = message.slice(0, messages.length - 1) // get all the messages.
 
       return [
         ...otherMessages,
@@ -73,6 +70,8 @@ export default function Home() {
       ]
      })  
   }
+    setIsLoading(false)
+
     } catch(error){
       console.error('Error:', error)
       setMessages((messages) => [
@@ -81,7 +80,6 @@ export default function Home() {
       ])
     }
   
-    isLoading(false)
   }
 
   const handleKeyPress = (event) => {
@@ -91,28 +89,29 @@ export default function Home() {
     }
   }
   return (
-<Box width={'100vw'} height={'100vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
-  <Stack direction={'column'} width={'500px'} height={'700px'} border={'solid black 1px '} p={2} spacing={3} >
+<Box width={'100vw'} height={'95vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+  <Stack direction={'column'} width={'500px'} height={'700px'} border={'solid black 1px '} p={2} spacing={2} >
     <Stack direction={'column'} spacing={2} flexGrow={1} overflow={'auto'} maxHeight={'100%'}>
-      {messages.map((message, index))(
+      {messages.map((message, index) => (
         <Box  key={index} display={'flex'} justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}  >
           <Box bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'} color={'white'} borderRadius={16} p={3} >
             {message.content}
           </Box>
         </Box>
-      )
+      ))
         
       }
     </Stack>
-
-  </Stack>
-  <Stack direction={'row'} spacing={2}>
-    <TextField label={'Message'} fullWidth value={'message'} onChange={(e) => setMessage(e.target.value)} onKeyPress={handleKeyPress} disabled={isLoading} />
+ <Stack direction={'row'} spacing={2}>
+    <TextField label={'Message'} fullWidth margin="dense" value={message} onChange={(e) => setMessage(e.target.value)} onKeyPress={handleKeyPress} disabled={isLoading} />
 
       <Button variant="contained" onClick={sendMessage} disabled={isLoading}> {isLoading ? 'Sending... ': 'Send'}</Button>
 
       <div ref={messageEndRef}/>
   </Stack>
+  </Stack>
+
+ 
 
 </Box>
   );
