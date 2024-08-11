@@ -1,7 +1,6 @@
 .signUpSect{
     display: flex;
     align-items: center;
-    height: 80vh;
     justify-content: center;
     flex-direction: column;
 }
@@ -12,7 +11,7 @@
 
 .sign_up form{
     padding: 2rem;
-    border: 2px solid black;
+    background-color: #C9C7DC;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -39,3 +38,48 @@ padding-inline-start: .5rem;
     border-radius: .3rem;
     background-color: rebeccapurple;
 }
+
+.sign_up form .forgotPassword{
+    width: 100%;
+    text-align:right;
+    padding: 0;
+    color: red;
+    font-size: 1.2rem;
+}
+
+.lines{
+    display: flex;
+    width: 50%;
+    margin-top: 1rem;
+    justify-content: center;
+    gap: 2rem;
+}
+
+
+.socials{
+    width: 100%;
+    display: grid;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.socials .account {
+    padding: .5rem 1rem ;
+    display:flex;
+    flex-direction: row;
+    gap: 1rem;
+    background-color:#E1E1E1;
+    max-width: 100%;
+    align-items: center;
+    padding: 1rem;
+    justify-content: space-around;
+    border-radius: .5rem;
+}
+
+.socials .account:hover{
+    background-color:#663399;
+    color: white;
+}
+
+
