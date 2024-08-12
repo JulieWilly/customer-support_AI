@@ -11,8 +11,8 @@ import auth from '@/config';
 import { GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 const Page = () => {
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState()
+  const [password, setPassword] = useState()
 
 const login = () => {
 
