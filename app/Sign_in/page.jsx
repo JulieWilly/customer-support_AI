@@ -9,7 +9,9 @@ import { FaGithub } from "react-icons/fa";
 import { FaGripLines } from "react-icons/fa";
 import auth from '@/config';
 import { GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 const Page = () => {
+  const router = useRouter()
 
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
