@@ -1,73 +1,98 @@
-'use client'
-import React, { useState} from 'react';
-import './auth.css'
-import auth from '@/config';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState } from "react";
+import "./auth.css";
+import { auth, firestore } from "@/config";
+
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
+import { doc, setDoc } from "@firebase/firestore";
 const Login = () => {
-  const [emailInput, setEmail] = useState('')
-  const [passwordInput, setPassword] = useState()
-  const router = useRouter()
+  const [emailInput, setEmail] = useState("");
+  const [passwordInput, setPassword] = useState();
+  const router = useRouter();
+  const [userName, setUserName] = useState("");
+  const [phone, setPhone] = useState("");
 
-  
-    const handleSignUp = async(e) => {
-      e.preventDefault()
-      const email = emailInput;
-      const password = passwordInput
-     try {
-       await createUserWithEmailAndPassword(
-         auth,
-         email,
-         password
-       ).then((userCredential) => {
-        const user = userCredential.user
-        const email = user.email;
-        console.log('user - ', userCredential)
-        console.log('email', email)
-
-      })
-       .catch((error) => {
-         const errorCode = error.code;
-         const errorMessage = error.message;
-         console.log(errorCode);
-         console.log(errorMessage);
-       });
-router.push("/Sign_in");
-     } catch (error) {
-       console.log(error);
-     } 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const email = emailInput;
+    const password = passwordInput;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("user", user);
+          // save other user details.
+          if (user) {
+            setDoc(doc(firestore, "Users", user.uid), {
+              email: user.email,
+              userName: userName,
+              phone: phone,
+            }).catch((error) => console.log(error));
+            console.log(user.email);
+            console.log(userName);
+            console.log(phone);
+          }
+          toast.success("Account created successfully.", {
+            position: top - center,
+          });
+          router.push("/Sign_in");
+        })
+        .catch((error) => {
+          toast.warning(error.message, {
+            position: bottom - center,
+          });
+        });
+    } catch (error) {
+      console.log(error);
     }
+  };
 
+  return (
+    <div className="signUpSect">
+      <h1>HeadStarter Mental Care Support</h1>
+      <h2>Healthy life with a healthy mind.</h2>
+      <p>Create your account</p>
+      <div className="sign_up">
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            required
+            placeholder="User name"
+          />
+          <input
+            type="email"
+            value={emailInput}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="Email address"
+          />
+          <input
+            type="number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+            placeholder="Phone number"
+          />
+          <input
+            type="number"
+            value={passwordInput}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+          />
 
-    return (
-      <div className="signUpSect">
-        <h1>HeadStarter Mental Care Support</h1>
-        <h2>Healthy life with a healthy mind.</h2>
-        <p>Create your account</p>
-        <div className="sign_up">
-          <form>
-            <input
-              type="email"
-              value={emailInput}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email address"
-            />
-            <input
-              type="number"
-              value={passwordInput}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Phone number"
-            />
-
-            <button type="button" onClick={handleSignUp}>
-              Sign up
-            </button>
-            <p>Already have an account? Sing in</p>
-          </form>
-        </div>
+          <button>Sign up</button>
+          <p>Already have an account? Sing in</p>
+        </form>
       </div>
-    );
-}
+      <ToastContainer />
+    </div>
+  );
+};
 
 export default Login;

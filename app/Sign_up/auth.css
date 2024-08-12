@@ -83,3 +83,11 @@ padding-inline-start: .5rem;
 }
 
 
+.toAccounts i span{
+    text-decoration: underline;
+}
+
+.toAccounts i span:hover{
+    color: blue;
+}
+
