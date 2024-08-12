@@ -46,7 +46,7 @@ export const POST =async (req) => {
     const completion  = await openai.chat.completions.create({
         // include the system prompt and the data.
         messages: [{role: 'system', content: systemPrompt}, ...data],
-        model: 'gpt-4o-mini',// model to use.
+        model: 'gpt-3.5-turbo',// model to use.
         stream: true // enable streaming.
     })
 
@@ -76,7 +76,6 @@ export const POST =async (req) => {
     })
 
 
-    return NextResponse.json({message: 'successful'})
     return new NextResponse(stream) // return the stream as the response.
 
 }

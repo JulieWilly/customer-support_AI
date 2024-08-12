@@ -91,3 +91,14 @@ padding-inline-start: .5rem;
     color: blue;
 }
 
+
+
+.header{
+    display: flex;
+flex-direction: row;
+align-items:center;
+gap: .5rem;
+padding: 0 1rem;
+font-size: 1.3rem;
+justify-content: end;
+}

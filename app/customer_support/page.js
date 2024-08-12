@@ -1,16 +1,37 @@
 'use client'
 import { Box, Button, Stack, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import '../Sign_up/auth.css'
+import { auth, firestore } from "@/config";
+import { doc, getDoc } from "@firebase/firestore";
 
 export default function Home() {
   const messageEndRef = useRef(null)
+  const [details, setDetails] = useState(null)
+
 
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth'})
   }
 
+  
+ const fetchUserData = async() => {
+   auth.onAuthStateChanged(async (user) => {
+    console.log('required user', user)
+    const docRef = doc(firestore, 'Users', user.uid);
+    const docSnap = await getDoc(docRef);
+    console.log('doc snap', docSnap.data)
+    if (docSnap.exists()) {
+      // setDetails(docSnap.data)
+
+    } else {
+      console.log('User is not logged in.')
+    }
+  })
+ }
   useEffect(() => {
       scrollToBottom()
+      fetchUserData()
   }, [])
   const [messages, setMessages] = useState([
     {
@@ -21,6 +42,8 @@ export default function Home() {
 
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+
 
   const sendMessage = async () => {
     // to limit sending empty messages.
@@ -88,8 +111,11 @@ export default function Home() {
       sendMessage()
     }
   }
-  return (
-<Box width={'100vw'} height={'95vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+
+  return (<>
+  <div className="header"> Welcome back <p>{'details.userName'}</p></div>
+
+  <Box width={'100vw'} height={'95vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
   <Stack direction={'column'} width={'500px'} height={'700px'} border={'solid black 1px '} p={2} spacing={2} >
     <Stack direction={'column'} spacing={2} flexGrow={1} overflow={'auto'} maxHeight={'100%'}>
       {messages.map((message, index) => (
@@ -113,6 +139,7 @@ export default function Home() {
 
  
 
-</Box>
+</Box></>
+
   );
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import '../Sign_up/auth.css'
+import './Sign_up/auth.css'
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebookF } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -11,6 +11,7 @@ import {auth, firestore} from '@/config';
 import { GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, GithubAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 const Page = () => {
   const router = useRouter()
 
@@ -20,10 +21,14 @@ const Page = () => {
 
   // navigate to sign up
 
-const handleSubmit = async () => {
+const handleSubmit = async (e) => {
+  e.preventDefault()
   try {
     const email = emailInput;
     const password = passwordInput;
+
+    console.log(email)
+    console.log(password)
 
 
     await signInWithEmailAndPassword(auth, email, password)
@@ -38,11 +43,12 @@ const handleSubmit = async () => {
         console.log(errorCode);
         console.log(errorMessage);
       });
+      toast.success('Signed in successfully.', {position:'top-center'})
 
-    alert("dsklsdkl");
-    router.push("/");
+    router.push("/customer_support  ");
   } catch (error) {
-    console.log(error);
+      toast.warning(error.message, { position: "top-center" });
+
   }
 };
 
@@ -95,25 +101,28 @@ const signInWithGithub = async () => {
         <h1>HeadStarter Mental Care Support</h1>
         <h3>Welcome back !!!</h3>
         <p>Sign in to proceed.</p>
-        <div className="sign_up" onSubmit={handleSubmit}>
-          <form action="">
-            
+        <div className="sign_up">
+          <form onSubmit={handleSubmit}>
             <input
+            required
               type="email"
               value={emailInput}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
             />
-          
+
             <input
+            required
               type="number"
               value={passwordInput}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Phone number"
+              placeholder="Password"
             />
 
             <p className="forgotPassword">Forgot Password?</p>
-            <button type="button">Sign in</button>
+
+            <button>Sign in </button>
+
             <p className="toAccounts">
               Dont have an account ?
               <i>

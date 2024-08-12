@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { doc, setDoc } from "@firebase/firestore";
+import Link from "next/link";
 const Login = () => {
   const [emailInput, setEmail] = useState("");
   const [passwordInput, setPassword] = useState();
@@ -36,13 +37,13 @@ const Login = () => {
             console.log(phone);
           }
           toast.success("Account created successfully.", {
-            position: top - center,
+            position: "top-center",
           });
-          router.push("/Sign_in");
+          router.push("/");
         })
         .catch((error) => {
           toast.warning(error.message, {
-            position: bottom - center,
+            position: "bottom-center",
           });
         });
     } catch (error) {
@@ -87,7 +88,15 @@ const Login = () => {
           />
 
           <button>Sign up</button>
-          <p>Already have an account? Sing in</p>
+
+          <p>
+            Already have an account?
+            <i>
+              <span>
+                <Link href={"/"}> Sign in</Link>
+              </span>
+            </i>
+          </p>
         </form>
       </div>
       <ToastContainer />
