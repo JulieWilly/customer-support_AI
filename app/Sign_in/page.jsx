@@ -9,7 +9,7 @@ import { FaGithub } from "react-icons/fa";
 import { FaGripLines } from "react-icons/fa";
 import auth from '@/config';
 import { GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
-const page = () => {
+const Page = () => {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -111,4 +111,4 @@ const signInWithGithub = async () => {
 
 
 
-export default page;
+export default Page;

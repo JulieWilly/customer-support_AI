@@ -4,7 +4,7 @@ import './auth.css'
 import auth from '@/config';
 import { GoogleAuthProvider, FacebookAuthProvider, GithubAuthProvider, TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
 
-const login = () => {
+const Login = () => {
     const handleSignUp = () => {
     }
 
@@ -35,4 +35,4 @@ const login = () => {
     );
 }
 
-export default login;
+export default Login;
