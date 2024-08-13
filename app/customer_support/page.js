@@ -1,9 +1,9 @@
 'use client'
-import { Box, Button, Stack, TextField, useRadioGroup } from "@mui/material";
+import { Box, Button, Stack, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import '../Sign_up/auth.css'
 import { auth, firestore } from "@/config";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "@firebase/firestore";
 import { toast } from "react-toastify";
   import { useRouter } from 'next/navigation';
@@ -13,28 +13,47 @@ export default function Home() {
 
 
   const messageEndRef = useRef(null)
-  const [details, setDetails] = useState({})
+  const [details, setDetails] = useState('')
+    
+const logout = () => {
+    setDetails(null)
 
+  signOut(auth).then(() => {
+    console.log('add',auth)
+    console.log('details', details)
+    router.push('/')
+  }).catch((error) => {
+    console.log(error)
+});
 
+   
+  }
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth'})
   }
 
-  
  const fetchUserData = async() => {
-   auth.onAuthStateChanged(async (user) => {
-    const docRef = doc(firestore, 'Users', user.uid);
+   onAuthStateChanged( auth, async (user) => {
+  if (user){
+     try{
+      const docRef = doc(firestore, 'Users', user.uid);
+    console.log('docref', docRef)
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setDetails(docSnap.data())
-
     } else {
      toast.warning('User not logged in.', {position: 'top-center'})
+    }
+    }catch(error){
+      console.log(error)
+      toast.error('Failed to fetch user data.')
+    } 
+  }else{
+      toast.warning('user not logged in.')
     }
   })
  }
 
- 
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -114,31 +133,15 @@ export default function Home() {
     }
   }
 
-  const logout = () => {
-  signOut(auth).then(() => {
-    setDetails(null)
-    if (!details){
-      router.push('/')
-
-    }
-    toast.success('User logged out successfully.')
-  }).catch((error) => {
-    console.log(error)
-});
-
-   
-  }
-
    useEffect(() => {
-    logout()
-    
+   
       fetchUserData()
-
       scrollToBottom()
-  }, [])
+
+  }, [auth])
 
   return (<>
-  <div className="header"> Welcome back <p>{details?.userName} <button onClick={logout}> Log out</button> </p></div>
+  <div className="header">Welcome back {details ? <p>{details?.userName} </p>: <p>loading data..</p> } <button className="button" onClick={logout}> Log out</button></div>
 
   <Box width={'100vw'} height={'95vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
   <Stack direction={'column'} width={'500px'} height={'700px'} border={'solid black 1px '} p={2} spacing={2} >

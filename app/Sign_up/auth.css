@@ -102,3 +102,16 @@ padding: 0 1rem;
 font-size: 1.3rem;
 justify-content: end;
 }
+
+.header p{
+font-weight: 600;
+}
+
+.button{
+    padding: .5rem;
+    background-color: #1976D2;
+    color: white;
+    border-radius: .5rem;
+    cursor: pointer;
+    border: none;
+}
