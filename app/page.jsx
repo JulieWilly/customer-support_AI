@@ -27,21 +27,15 @@ const handleSubmit = async (e) => {
     const email = emailInput;
     const password = passwordInput;
 
-    console.log(email)
-    console.log(password)
-
 
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log("user", user);
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
 
-        console.log(errorCode);
-        console.log(errorMessage);
       });
       toast.success('Signed in successfully.', {position:'top-center'})
 
@@ -57,7 +51,7 @@ const signInWithGoogle = async () => {
         const provider = new GoogleAuthProvider();
         const result = signInWithPopup(auth, provider)
 
-        console.log(result)
+       router.push("/customer_support  ");
 
     } catch(error) {
         console.log(error)

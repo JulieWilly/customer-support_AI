@@ -1,13 +1,19 @@
 'use client'
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Box, Button, Stack, TextField, useRadioGroup } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import '../Sign_up/auth.css'
 import { auth, firestore } from "@/config";
+import { signOut } from "firebase/auth";
 import { doc, getDoc } from "@firebase/firestore";
+import { toast } from "react-toastify";
+  import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter()
+
+
   const messageEndRef = useRef(null)
-  const [details, setDetails] = useState(null)
+  const [details, setDetails] = useState({})
 
 
   const scrollToBottom = () => {
@@ -17,22 +23,18 @@ export default function Home() {
   
  const fetchUserData = async() => {
    auth.onAuthStateChanged(async (user) => {
-    console.log('required user', user)
     const docRef = doc(firestore, 'Users', user.uid);
     const docSnap = await getDoc(docRef);
-    console.log('doc snap', docSnap.data)
     if (docSnap.exists()) {
-      // setDetails(docSnap.data)
+      setDetails(docSnap.data())
 
     } else {
-      console.log('User is not logged in.')
+     toast.warning('User not logged in.', {position: 'top-center'})
     }
   })
  }
-  useEffect(() => {
-      scrollToBottom()
-      fetchUserData()
-  }, [])
+
+ 
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -112,8 +114,31 @@ export default function Home() {
     }
   }
 
+  const logout = () => {
+  signOut(auth).then(() => {
+    setDetails(null)
+    if (!details){
+      router.push('/')
+
+    }
+    toast.success('User logged out successfully.')
+  }).catch((error) => {
+    console.log(error)
+});
+
+   
+  }
+
+   useEffect(() => {
+    logout()
+    
+      fetchUserData()
+
+      scrollToBottom()
+  }, [])
+
   return (<>
-  <div className="header"> Welcome back <p>{'details.userName'}</p></div>
+  <div className="header"> Welcome back <p>{details?.userName} <button onClick={logout}> Log out</button> </p></div>
 
   <Box width={'100vw'} height={'95vh'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
   <Stack direction={'column'} width={'500px'} height={'700px'} border={'solid black 1px '} p={2} spacing={2} >
