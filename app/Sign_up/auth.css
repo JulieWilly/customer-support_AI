@@ -20,15 +20,16 @@
 }
 
 .sign_up form input {
-    height: 2rem;
-width: 17rem;
+    height: 2.5rem;
+width: 23rem;
 margin: 1rem 0;
 outline: none;
 border-radius: .3rem;
 padding-inline-start: .5rem;
+border: none;
 }
 .sign_up form button{
-    width: 100%;
+    width: 23rem;
     height: 2.5rem;
     outline: none;
     margin-top: 1rem;
@@ -40,7 +41,7 @@ padding-inline-start: .5rem;
 }
 
 .sign_up form .forgotPassword{
-    width: 100%;
+    width: 23rem;
     text-align:right;
     padding: 0;
     color: red;
@@ -57,20 +58,19 @@ padding-inline-start: .5rem;
 
 
 .socials{
-    width: 100%;
-    display: grid;
-    flex-direction: row;
-    flex-wrap: wrap;
+    min-width: 100%;
+    display: flex;
     gap: .5rem;
+  
 }
 
 .socials .account {
     padding: .5rem 1rem ;
     display:flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: .5rem;
     background-color:#E1E1E1;
-    max-width: 100%;
+    max-width: 5rem;
     align-items: center;
     padding: 1rem;
     justify-content: space-around;

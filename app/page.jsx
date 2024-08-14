@@ -151,8 +151,7 @@ const Page = () => {
   return (
     <div className="signUpSect">
       <h1>HeadStarter Mental Care Support</h1>
-      <h3>Welcome back !!!</h3>
-      <p>Sign in to proceed.</p>
+      <h3>Welcome back !!!   Sign in to proceed.</h3>
       <div className="sign_up">
         <form onSubmit={handleSubmit}>
           <input
@@ -170,7 +169,6 @@ const Page = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
-          {/* {error && <p className="error">{error}</p>} */}
 
           <p className="forgotPassword">Forgot Password?</p>
 
