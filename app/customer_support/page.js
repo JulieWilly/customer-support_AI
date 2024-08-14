@@ -16,12 +16,12 @@ export default function Home() {
   const [details, setDetails] = useState('')
     
 const logout = () => {
-    setDetails(null)
 
   signOut(auth).then(() => {
-    console.log('add',auth)
-    console.log('details', details)
+     const data = setDetails(null)
+    if(!data){
     router.push('/')
+    }
   }).catch((error) => {
     console.log(error)
 });
@@ -37,7 +37,6 @@ const logout = () => {
   if (user){
      try{
       const docRef = doc(firestore, 'Users', user.uid);
-    console.log('docref', docRef)
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setDetails(docSnap.data())

@@ -32,9 +32,6 @@ const Login = () => {
               userName: userName,
               phone: phone,
             }).catch((error) => console.log(error));
-            console.log(user.email);
-            console.log(userName);
-            console.log(phone);
           }
           toast.success("Account created successfully.", {
             position: "top-center",

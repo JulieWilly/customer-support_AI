@@ -20,6 +20,7 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getDoc, setDoc, doc } from "@firebase/firestore";
 const Page = () => {
   const router = useRouter();
 
@@ -72,12 +73,39 @@ const Page = () => {
     }
   };
 
+  const signInWithProvider = async (provider) => {
+     signInWithPopup(auth, provider).then(async (result) => {
+       const user = result.user;
+       console.log("user", user);
+
+       // store user details to firestore
+       // check if the user already exists.
+       const userDocRef = doc(firestore, "Users", user.uid);
+       const userDoc = await getDoc(userDocRef);
+
+       if (!userDoc.exists()) {
+         const createNewUser = {
+           email: user.email,
+           userName: user.displayName,
+           phone: user.phoneNumber,
+         };
+         await setDoc(userDocRef, createNewUser);
+         alert("user created successfully.");
+       }
+       if (user.accessToken !== null) {
+         router.push("/customer_support");
+       } else {
+         toast.warning("Sign in unsuccessful");
+       }
+     });
+  }
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      const result = signInWithPopup(auth, provider);
-
-      router.push("/customer_support  ");
+       provider.setCustomParameters({
+         prompt: "select_account", // Force the account selection prompt
+       });
+       signInWithProvider(provider)
     } catch (error) {
       setError(error);
     }
@@ -86,9 +114,11 @@ const Page = () => {
   const signInWithFacebook = async () => {
     try {
       const provider = new FacebookAuthProvider();
-      const result = signInWithPopup(auth, provider);
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      })
 
-      console.log(result);
+    signInWithProvider(provider)
     } catch (error) {
       console.log(error);
     }
@@ -100,6 +130,9 @@ const Page = () => {
       const result = signInWithPopup(auth, provider);
 
       console.log(result);
+      if (result) {
+        router.push("/customer_support");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -111,6 +144,9 @@ const Page = () => {
       const result = signInWithPopup(auth, provider);
 
       console.log(result);
+      if (result) {
+        router.push("/customer_support");
+      }
     } catch (error) {
       console.log(error);
     }
