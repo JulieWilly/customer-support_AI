@@ -90,9 +90,9 @@ const Page = () => {
            phone: user.phoneNumber,
          };
          await setDoc(userDocRef, createNewUser);
-         alert("user created successfully.");
        }
        if (user.accessToken !== null) {
+         toast.success("Sign in successful");
          router.push("/customer_support");
        } else {
          toast.warning("Sign in unsuccessful");
@@ -127,12 +127,10 @@ const Page = () => {
   const signInWithTwitter = async () => {
     try {
       const provider = new TwitterAuthProvider();
-      const result = signInWithPopup(auth, provider);
-
-      console.log(result);
-      if (result) {
-        router.push("/customer_support");
-      }
+        provider.setCustomParameters({
+          prompt: "select_account",
+        });
+      signInWithProvider(provider)
     } catch (error) {
       console.log(error);
     }
@@ -141,12 +139,11 @@ const Page = () => {
   const signInWithGithub = async () => {
     try {
       const provider = new GithubAuthProvider();
-      const result = signInWithPopup(auth, provider);
+          provider.setCustomParameters({
+            prompt: "select_account",
+          });
 
-      console.log(result);
-      if (result) {
-        router.push("/customer_support");
-      }
+          signInWithProvider(provider)
     } catch (error) {
       console.log(error);
     }
